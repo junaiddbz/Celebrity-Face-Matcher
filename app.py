@@ -3,6 +3,21 @@ import os
 import pickle
 import numpy as np
 from PIL import Image
+
+# --- MONKEY PATCH START ---
+# This fixes the "cannot import layer_utils" error by faking it
+import tensorflow as tf
+try:
+    from tensorflow.keras.utils import layer_utils
+except ImportError:
+    from tensorflow.keras import utils
+    if not hasattr(utils, 'layer_utils'):
+        class LayerUtils:
+            get_source_inputs = utils.get_source_inputs
+        utils.layer_utils = LayerUtils()
+# --- MONKEY PATCH END ---
+
+# Now it is safe to import vggface
 from keras_vggface.utils import preprocess_input
 from keras_vggface.vggface import VGGFace
 from mtcnn import MTCNN
@@ -85,7 +100,15 @@ if uploaded_file is not None:
                     
                     # 4. Find Match
                     index_pos = recommend(feature_list, features)
-                    predicted_actor = " ".join(filenames[index_pos].split('\\')[-1].split('_')) # Adjust split based on your filename format
+                    
+                    # --- PATH FIXING LOGIC ---
+                    source_path = filenames[index_pos]
+                    
+                    # Replace Windows backslashes with Linux forward slashes
+                    final_path = source_path.replace('\\', '/')
+                    
+                    # Define predicted_actor variable
+                    predicted_actor = " ".join(final_path.split('/')[-1].split('_'))
                     
                     # 5. Display Result
                     col1, col2 = st.columns(2)
@@ -96,7 +119,12 @@ if uploaded_file is not None:
                         
                     with col2:
                         st.header("Celebrity Match")
-                        st.image(filenames[index_pos], width=200, caption=predicted_actor)
+                        st.write(f"Matched: {predicted_actor}")
+                        if os.path.exists(final_path):
+                            st.image(final_path, width=200)
+                        else:
+                            # Fallback if image path is broken
+                            st.warning(f"Image not found at: {final_path}")
                         
                     st.success(f"Match Found: {predicted_actor}")
 
