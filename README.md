@@ -10,6 +10,11 @@ app_file: app.py
 pinned: false
 ---
 
-# Celebrity Face Matcher
+# 🎬 Celebrity Face Matcher
 
-This project uses **VGGFace (ResNet50)** and **MTCNN** to find your celebrity look-alike.
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/junaiddbz/Celebrity-Lookalike)
+
+Find your celebrity look-alike using **VGGFace (ResNet50)** and **MTCNN**.
+
+## 🚀 Live Demo
+**[Click here to try the App](https://huggingface.co/spaces/junaiddbz/Celebrity-Lookalike)**
